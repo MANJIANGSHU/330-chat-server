@@ -1,30 +1,20 @@
-const http = require('http');
 const WebSocket = require('ws');
 
-// 1. 创建一个基础的 HTTP 服务器（这是为了让 Railway 知道我们还活着）
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Server is running! Please use WebSocket to connect.');
-});
+// 1. 创建 WebSocket 服务器
+// 注意：这里我们不创建 HTTP 服务器了，直接用最原始的方式，减少干扰
+const wss = new WebSocket.Server({ port: process.env.PORT || 8080 });
 
-// 2. 创建 WebSocket 服务器并绑定到上面的 HTTP 服务器上
-const wss = new WebSocket.Server({ server });
+console.log(`Server started`);
 
 wss.on('connection', function connection(ws) {
-    console.log('New client connected!');
-    
-    // 发送欢迎消息
-    ws.send('Welcome! Connection successful.');
+  // 连上后，服务器保持沉默，不发 Welcome 消息
+  // 避免因为发了文本消息导致对方解析失败
+  console.log('Client connected');
 
-    ws.on('message', function message(data) {
-        console.log('received: %s', data);
-        // 收到什么就回复什么
-        ws.send('Server received: ' + data);
-    });
-});
-
-// 3. 监听 Railway 分配的端口
-const port = process.env.PORT || 8080;
-server.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  ws.on('message', function message(data) {
+    // 收到什么，就原封不动发回去（Echo）
+    // 或者广播给其他人（取决于你的需求，这里先做回声测试）
+    console.log('received: %s', data);
+    ws.send(data);
+  });
 });
