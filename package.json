@@ -1,5 +1,5 @@
 {
-  "name": "330-chat-server",
+  "name": "online-chat-server",
   "version": "1.0.0",
   "description": "真人联机WebSocket服务器 - 为E-phone应用提供实时通信支持",
   "main": "server.js",
